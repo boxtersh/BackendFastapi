@@ -6,3 +6,6 @@ def is_id(lst: dict, id: int) -> bool:
 def list_is_empty(lst: list) -> bool:
     return len(lst) == 0
 
+def dict_ge_limit(dict_: dict, limit: int) -> bool:
+    return len(dict_) >= limit
+

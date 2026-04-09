@@ -31,3 +31,10 @@ class TODOS:
     def full_change_todo_attributes(self, todo_data, id):
         self.todos_lst[id] = todo_data
         return {id: todo_data}
+
+    def del_todo_id(self, id):
+        buff_id = id
+        buff_item = self.todos_lst[id]
+        del self.todos_lst[id]
+        return {buff_id: buff_item}
+
