@@ -1,5 +1,5 @@
 # Есть задача с id в списке?
-def is_id(lst: dict, id: int) -> bool:
+def id_in_todos(lst: dict, id: int) -> bool:
     return lst.get(id, False)
 
 # Список пуст

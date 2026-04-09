@@ -47,7 +47,7 @@ async def get_todo_id(limit: int=None) -> dict:
 # Получить задачу по id
 @app.get('/todos/{id}')
 async def get_todo_id(id: int) -> dict:
-    if not val.is_id(todos.todos_lst, id):
+    if not val.id_in_todos(todos.todos_lst, id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
             detail='Задача с указанным ID не найдена')
     return todos.get_todo_id(id)
@@ -55,7 +55,7 @@ async def get_todo_id(id: int) -> dict:
 # Изменить задачу целиком
 @app.put('/todos/{id}')
 async def put_todo_id(todo_data: TodoCreate, id: int) -> dict:
-    if not val.is_id(todos.todos_lst, id):
+    if not val.id_in_todos(todos.todos_lst, id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return todos.full_change_todo_attributes(todo_data, id)
 
@@ -67,7 +67,7 @@ async def patch_todo_id(todo_data_select: dict, id: int) -> dict:
 # Удалить задачу по id
 @app.delete('/todos/{id}')
 async def delete_todo_id(id: int) -> dict:
-    if not val.is_id(todos.todos_lst, id):
+    if not val.id_in_todos(todos.todos_lst, id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return todos.del_todo_id(id)
 
