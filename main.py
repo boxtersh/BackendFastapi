@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from logging import raiseExceptions
+
+from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 
@@ -38,39 +40,24 @@ async def add_todo(todo_data: TodoCreate) -> dict:
 # Получить все задачи
 @app.get('/todos')
 async def get_todo_id() -> dict:
-    if not val.list_is_empty(todos.todos_lst):
-        print('Ошибка, Список задач пуст')
-        return {'error': 'Список задач пуст'}
-    response = dict()
-    for obj in todos.todos_lst:
-        response[obj.id] = todos.response_todo_json_sans_id(obj)
-    return response
+    return todos.todos_lst
 
 # Получить задачу по id
 @app.get('/todos')
 async def get_todo_id(id: int) -> dict:
-    if not val.list_is_empty(todos.todos_lst):
-        print('Ошибка, Список задач пуст')
-        return {'error': 'Список задач пуст'}
     if not val.is_id(todos.todos_lst, id):
-        print('Ошибка, id не найден')
-        return {'error': 'Ошибка, id не найден'}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+            detail='Задача с указанным ID не найдена')
     return todos.get_todo_id(id)
 
 # Изменить задачу целиком
 @app.put('/todos')
 async def get_todo_id(todo_data: TodoCreate, id: int) -> dict:
-    if not val.list_is_empty(todos.todos_lst):
-        print('Ошибка, Список задач пуст')
-        return {'error': 'Список задач пуст'}
     if not val.is_id(todos.todos_lst, id):
-        print('Ошибка, id не найден')
-        return {'error': 'Ошибка, id не найден'}
-    return todos.change_todo_attributes(todo_data, id)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return todos.full_change_todo_attributes(todo_data, id)
 
-'''
-{
-'title': 'Читать книги',
-'description': 'Python, JS'
+a = {'title': 'Читать книги',
+'description': 'Python, JS',
+'is_completed': False
 }
-'''
