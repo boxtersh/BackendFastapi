@@ -1,40 +1,56 @@
-import copy
+import validation as val
 
-class TODOS:
+class Todos:
     def __init__(self):
         self.__id = -1
-        self.todos_lst = {}
+        self.todos_dict = {}
 
-    @staticmethod
-    def response_todo_json(todo) -> dict:
-        return {'id': todo.id,
-                'title': todo.title,
-                'description': todo.description,
-                'is_completed': todo.is_completed}
+    @property
+    def id_(self):
+        return self.__id
 
-    @staticmethod
-    def response_todo_json_sans_id(todo) -> dict:
-        return {'title': todo.title,
-                'description': todo.description,
-                'is_completed': todo.is_completed}
-
-    def add_todo(self, todo) -> dict:
+    @property
+    def increment_id (self):
         self.__id += 1
-        self.todos_lst[self.__id] = todo
-        return {self.__id: todo}
+        return self.__id
 
-    def get_todo_id(self, id: int) -> dict:
-        for obj in self.todos_lst:
-            if obj.id == id:
-                return self.response_todo_json(obj)
+    def get_all_todo_taking_limit(self, limit: int|None) -> list:
+        if val.todos_dict_is_empty(self.todos_dict):
+            return []
+        list_todos = [todo_response for todo_response in self.todos_dict.values()]
+        if limit is None:
+            return list_todos
+        elif val.todos_is_greater_or_equal_limit(todos_dict=self.todos_dict, limit=limit):
+            return list_todos[:limit]
+        else:
+            return list_todos
 
-    def full_change_todo_attributes(self, todo_data, id):
-        self.todos_lst[id] = todo_data
-        return {id: todo_data}
+    def get_todo_id(self, id_: int) -> "TodoResponse | bool":
+        if val.todos_is_in_todos_dict(self.todos_dict, id_):
+            return self.todos_dict[id_]
+        return False
 
-    def del_todo_id(self, id):
-        buff_id = id
-        buff_item = self.todos_lst[id]
-        del self.todos_lst[id]
-        return {buff_id: buff_item}
+    def selective_update_date(self, id_: int, update_date: 'UpdateData') -> 'TodoResponse | bool':
+        todo_id = self.get_todo_id(id_)
+        if not todo_id:
+            return False
+        if val.update_data_is_nane(update_date):
+            return todo_id
+        for key, item in vars(update_date).items():
+            if not item is None:
+                setattr(todo_id, key, item)
+        return todo_id
+
+    def full_update_date_todo_attributes(self, todo_data, id_):
+        self.todos_dict[id_] = todo_data
+        return {id_: todo_data}
+
+    def del_todo_id(self, id_: int):
+        if self.get_todo_id(id_):
+            buff_todo_response = self.get_todo_id(id_)
+            del self.todos_dict[id_]
+            return buff_todo_response
+        return False
+
+
 
