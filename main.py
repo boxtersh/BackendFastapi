@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, Annotated
 
 from databases import Todos
-import validation as val
 
 class TodoCreate(BaseModel):
     title: str = Field(
@@ -27,7 +26,7 @@ class TodoResponse(BaseModel):
     description: Optional[str]
     is_completed: bool
 
-class UpdateData (BaseModel):
+class UpdateData(BaseModel):
     title: Optional[str] = Field(
         default=None,
         min_length=6,
@@ -105,10 +104,3 @@ async def delete_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
     if not todo_response:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()
-'''
-{
-"title": "Читать книги",
-"description": "Python, JS, FastAPI",
-"is_completed": false
-}
-'''

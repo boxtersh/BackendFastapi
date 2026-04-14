@@ -6,10 +6,6 @@ class Todos:
         self.todos_dict = {}
 
     @property
-    def id_(self):
-        return self.__id
-
-    @property
     def increment_id (self):
         self.__id += 1
         return self.__id
@@ -51,6 +47,3 @@ class Todos:
             del self.todos_dict[id_]
             return buff_todo_response
         return False
-
-
-
