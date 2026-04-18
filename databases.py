@@ -1,5 +1,3 @@
-import validation as val
-
 class Todos:
     def __init__(self):
         self.__id = -1
