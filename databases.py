@@ -11,18 +11,18 @@ class Todos:
         return self.__id
 
     def get_all_todo_taking_limit(self, limit: int|None) -> list:
-        if val.todos_dict_is_empty(self.todos_dict):
+        if len(self.todos_dict) == 0:
             return []
         list_todos = [todo_response for todo_response in self.todos_dict.values()]
         if limit is None:
             return list_todos
-        elif val.todos_is_greater_or_equal_limit(todos_dict=self.todos_dict, limit=limit):
+        elif len(self.todos_dict) >= limit:
             return list_todos[:limit]
         else:
             return list_todos
 
     def get_todo_id(self, id_: int) -> "TodoResponse | bool":
-        if val.todos_is_in_todos_dict(self.todos_dict, id_):
+        if self.todos_dict.get(id_, False):
             return self.todos_dict[id_]
         return False
 
@@ -30,7 +30,7 @@ class Todos:
         todo_id = self.get_todo_id(id_)
         if not todo_id:
             return False
-        if val.update_data_is_nane(update_date):
+        if update_date is None:
             return todo_id
         for key, item in vars(update_date).items():
             if not item is None:
