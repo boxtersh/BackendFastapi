@@ -16,8 +16,7 @@ class Todos:
             return list_todos
         elif len(self.todos_dict) >= limit:
             return list_todos[:limit]
-        else:
-            return list_todos
+        return list_todos
 
     def get_todo_id(self, id_: int) -> "TodoResponse | bool":
         if self.todos_dict.get(id_, False):
