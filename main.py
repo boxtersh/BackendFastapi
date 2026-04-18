@@ -4,6 +4,7 @@ from typing import Optional, Annotated
 
 from databases import Todos
 
+
 class TodoCreate(BaseModel):
     title: str = Field(
         min_length=6,
@@ -20,11 +21,13 @@ class TodoCreate(BaseModel):
         description="Отметка о выполнении"
     )
 
+
 class TodoResponse(BaseModel):
     id: int
     title: str
     description: Optional[str]
     is_completed: bool
+
 
 class UpdateData(BaseModel):
     title: Optional[str] = Field(
@@ -44,24 +47,28 @@ class UpdateData(BaseModel):
         description="Отметка о выполнении"
     )
 
+
 class TodosListResponse(BaseModel):
-    todos_list: list[TodoResponse]=[]
+    todos_list: list[TodoResponse] = []
+
 
 app = FastAPI()
 dbase = Todos()
+
 
 # Создать задачу
 @app.post('/todos', response_model=TodoResponse, status_code=201)
 async def add_todo(todo_data: TodoCreate) -> dict:
     id_ = dbase.increment_id
     todo_response = TodoResponse(
-        id = id_,
-        title = todo_data.title,
-        description = todo_data.description,
-        is_completed = todo_data.is_completed
+        id=id_,
+        title=todo_data.title,
+        description=todo_data.description,
+        is_completed=todo_data.is_completed
     )
     dbase.todos_dict[id_] = todo_response
     return todo_response.model_dump()
+
 
 # Получить все задачи
 @app.get('/todos', response_model=TodosListResponse, status_code=200)
@@ -70,6 +77,7 @@ async def get_all_todo_taking_limit(limit: Annotated[Optional[int], Query()] = N
     todos_list_response = TodosListResponse(todos_list=list_todos)
     return todos_list_response.model_dump()
 
+
 # Получить задачу по id
 @app.get('/todos/{id_}', response_model=TodoResponse, status_code=200)
 async def get_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
@@ -77,6 +85,7 @@ async def get_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
     if not todo_response:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()
+
 
 # Изменить задачу целиком
 @app.put('/todos/{id_}', response_model=TodoResponse, status_code=200)
@@ -89,13 +98,15 @@ async def put_todo_id(todo_data: TodoCreate, id_: Annotated[int, Path(..., gt=-1
     todo_response.is_completed = todo_data.is_completed
     return todo_response.model_dump()
 
+
 # Изменить указанные поля задачи
 @app.patch('/todos/{id_}', response_model=TodoResponse, status_code=200)
-async def patch_todo_id(id_: Annotated[int, Path(..., gt=-1)], update_date: UpdateData=None) -> dict:
+async def patch_todo_id(id_: Annotated[int, Path(..., gt=-1)], update_date: UpdateData = None) -> dict:
     todo_response = dbase.selective_update_date(id_, update_date)
     if not todo_response:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()
+
 
 # Удалить задачу по id
 @app.delete('/todos/{id_}', response_model=TodoResponse, status_code=200)
