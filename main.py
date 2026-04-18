@@ -2,7 +2,7 @@ from fastapi import FastAPI, status, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 from typing import Optional, Annotated
 
-from databases import Todos
+from databases import TodosDBase
 
 
 class TodoCreate(BaseModel):
@@ -53,7 +53,7 @@ class TodosListResponse(BaseModel):
 
 
 app = FastAPI()
-dbase = Todos()
+dbase = TodosDBase()
 
 
 # Создать задачу
@@ -82,7 +82,7 @@ async def get_all_todo_taking_limit(limit: Annotated[Optional[int], Query()] = N
 @app.get('/todos/{id_}', response_model=TodoResponse, status_code=200)
 async def get_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
     todo_response = dbase.get_todo_id(id_)
-    if not todo_response:
+    if todo_response is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()
 
@@ -91,7 +91,7 @@ async def get_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
 @app.put('/todos/{id_}', response_model=TodoResponse, status_code=200)
 async def put_todo_id(todo_data: TodoCreate, id_: Annotated[int, Path(..., gt=-1)]) -> dict:
     todo_response = dbase.get_todo_id(id_)
-    if not todo_response:
+    if todo_response is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     todo_response.title = todo_data.title
     todo_response.description = todo_data.description
@@ -103,7 +103,7 @@ async def put_todo_id(todo_data: TodoCreate, id_: Annotated[int, Path(..., gt=-1
 @app.patch('/todos/{id_}', response_model=TodoResponse, status_code=200)
 async def patch_todo_id(id_: Annotated[int, Path(..., gt=-1)], update_date: UpdateData = None) -> dict:
     todo_response = dbase.selective_update_date(id_, update_date)
-    if not todo_response:
+    if todo_response is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()
 
@@ -112,6 +112,6 @@ async def patch_todo_id(id_: Annotated[int, Path(..., gt=-1)], update_date: Upda
 @app.delete('/todos/{id_}', response_model=TodoResponse, status_code=200)
 async def delete_todo_id(id_: Annotated[int, Path(..., gt=-1)]) -> dict:
     todo_response = dbase.del_todo_id(id_)
-    if not todo_response:
+    if todo_response is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача с указанным ID не найдена')
     return todo_response.model_dump()

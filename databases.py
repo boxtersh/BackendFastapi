@@ -1,4 +1,4 @@
-class Todos:
+class TodosDBase:
     def __init__(self):
         self.__id = -1
         self.todos_dict = {}
@@ -16,15 +16,15 @@ class Todos:
             return list_todos
         return list_todos[:limit]
 
-    def get_todo_id(self, id_: int) -> "TodoResponse | bool":
+    def get_todo_id(self, id_: int) -> "TodoResponse | None":
         if self.todos_dict.get(id_, False):
             return self.todos_dict[id_]
-        return False
+        return None
 
-    def selective_update_date(self, id_: int, update_date: 'UpdateData') -> 'TodoResponse | bool':
+    def selective_update_date(self, id_: int, update_date: 'UpdateData') -> 'TodoResponse | None':
         todo_id = self.get_todo_id(id_)
-        if not todo_id:
-            return False
+        if todo_id is None:
+            return None
         if update_date is None:
             return todo_id
         for key, item in vars(update_date).items():
@@ -32,13 +32,13 @@ class Todos:
                 setattr(todo_id, key, item)
         return todo_id
 
-    def full_update_date_todo_attributes(self, todo_data, id_):
+    def full_update_date_todo_attributes(self, todo_data, id_) -> dict:
         self.todos_dict[id_] = todo_data
         return {id_: todo_data}
 
-    def del_todo_id(self, id_: int):
+    def del_todo_id(self, id_: int) -> 'TodoResponse | None':
         if self.get_todo_id(id_):
             buff_todo_response = self.get_todo_id(id_)
             del self.todos_dict[id_]
             return buff_todo_response
-        return False
+        return None
