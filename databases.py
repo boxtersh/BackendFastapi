@@ -12,11 +12,9 @@ class Todos:
         if len(self.todos_dict) == 0:
             return []
         list_todos = [todo_response for todo_response in self.todos_dict.values()]
-        if limit is None:
+        if limit is None or len(self.todos_dict) <= limit:
             return list_todos
-        elif len(self.todos_dict) >= limit:
-            return list_todos[:limit]
-        return list_todos
+        return list_todos[:limit]
 
     def get_todo_id(self, id_: int) -> "TodoResponse | bool":
         if self.todos_dict.get(id_, False):
